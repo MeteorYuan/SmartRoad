@@ -22,6 +22,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class VideoController {
     @Autowired
     VideoService videoService;
+
+
+    /**
+     * 文件上传接口
+     * @param request
+     * @return
+     * @throws IOException
+     * @throws EncoderException
+     */
     @RequestMapping(value = "/file")
     @ResponseBody
     public String file (HttpServletRequest request) throws IOException, EncoderException {
@@ -29,6 +38,11 @@ public class VideoController {
         return null;
     }
 
+    /**
+     * 给前端完成获取video列表过程
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "getVideoList")
     @ResponseBody
     public List<VidData> getVideoList(HttpServletRequest request){
@@ -36,24 +50,31 @@ public class VideoController {
     }
 
 
+    /**
+     * 这个接口调用了百度API，关于百度API
+     * 使用的是百度AI的EASYDL，在百度云的图像识别模块里有，
+     * 调用量可能会有改变，具体代码实现不用修改，但是建议自己申请一个账号。
+     * @param vidData
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value="analysisVideo")
     @ResponseBody
     public String CutVideo(VidData vidData) throws Exception {
       return videoService.analysisVideo(vidData);
     }
 
+
+    /**
+     * 删除视频
+     * @param name
+     * @return
+     */
     @RequestMapping(value = "delete")
     public String Delete(String name){
         videoService.delete(name);
         return "success";
     }
-
-    @RequestMapping("/test")
-    public void SayHello(HttpServletRequest request, HttpServletResponse response){
-        System.out.println("hello");
-    }
-
-
 
 
 

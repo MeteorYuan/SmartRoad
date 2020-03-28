@@ -9,6 +9,8 @@ import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static com.hfxy.video.Tools.EasyDl.Main.easydlImageClassify;
 
 public class AnalysisTool {
+    /**
+     * 这个类使用了生产消费者模式的方式来实现，
+     * 具体实现为阻塞队列 BlockingQueue，
+     * 一个线程用来实现从视频剪切成一张一张的图片
+     * 一个线程用来对每一个图片进行识别，然后把结果存储到数据库中
+     *
+     *
+     * 这个类由于需要new 来创建，所以需要通过ApplicationContext来进行Bean的获取和赋值
+     */
+
+
+
     private String videoname;
     private int filelength;
     private VideoMapper videoMapper;
@@ -34,12 +48,13 @@ public class AnalysisTool {
     private BlockingQueue<Integer> signQueue = new LinkedBlockingQueue<>(200);
     private BlockingQueue<Integer> roadQueue = new LinkedBlockingQueue<>(200);
     public class CutTool extends Thread{
+        @Override
         public void run()
         {
             try
             {
                 VideoTool vt=new VideoTool();
-                int utc = Integer.parseInt(vt.getUTCSecond(videoname.substring(0, 14)));
+                int utc = Integer.parseInt(VideoTool.getUTCSecond(videoname.substring(0, 14)));
                 vt.checkDir("VidData/pic/");
                 File file = new File("VidData/" + videoname + ".mp4");
                 FFmpegFrameGrabber ff = new FFmpegFrameGrabber(file);
